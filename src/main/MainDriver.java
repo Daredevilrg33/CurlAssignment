@@ -45,6 +45,9 @@ public class MainDriver {
 			ind = ind + 5;
 			inputData = inputData.substring(ind, inputData.length());
 		}
+		if (inputData.indexOf("-v") != -1 || inputData.indexOf("-V") != -1) {
+			verbose = true;
+		}
 
 		for (int i = 0; i < inputData.length(); i++) {
 
@@ -59,40 +62,37 @@ public class MainDriver {
 					}
 				}
 			}
-			if (inputData.substring(i, i + 1).equals("-")) {
-				if (inputData.substring(i + 1, i + 2).equalsIgnoreCase("v")) {
-					if (inputData.indexOf("-v") != -1 || inputData.indexOf("-V") != -1) {
-						 verbose=true; 
-					}
-				}
-			}
-			if (inputData.substring(i, i + 1).equals("-")) {
-				if(requestType.equalsIgnoreCase("post")) {
-				if (inputData.substring(i + 1, i + 2).equalsIgnoreCase("d")) {
-					if (inputData.indexOf("-d") != -1 || inputData.indexOf("-D") != -1) {
-						int index1 = inputData.indexOf("-d") == -1 ? inputData.indexOf("-D") : inputData.indexOf("-d");
-						int index2 = inputData.indexOf("}", index1 + 3);
-						String data = inputData.substring(index1 + 5, index2 );
-						for (String d : data.split(","))
-							dataList.add(d);
-						inputData = inputData.substring(index1 + 3 + data.length(), inputData.length());
-					}
-				} else if (inputData.substring(i + 1, i + 2).equalsIgnoreCase("f")) {
-					if (inputData.indexOf("-f") != -1 || inputData.indexOf("-F") != -1) {
-						int index1 = inputData.indexOf("-f") == -1 ? inputData.indexOf("-F") : inputData.indexOf("-f");
-						int index2 = inputData.indexOf("'", index1 + 4);
-						String fileData = inputData.substring(index1 + 4, index2);
-						fileList.add(fileData);
-						inputData = inputData.substring(index1 + 4 + fileData.length(), inputData.length());
-					}
-				}
-				}
-				else
-				{
+			
+			if (requestType.equalsIgnoreCase("get")) {
+				if (inputData.indexOf("-d") != -1 || inputData.indexOf("-D") != -1 || inputData.indexOf("-f") != -1
+						|| inputData.indexOf("-F") != -1) {
 					System.out.println("Inappropriate command");
+					break;
+				}
+			} else {
+				if (inputData.substring(i, i + 1).equals("-")) {
+					if (inputData.substring(i + 1, i + 2).equalsIgnoreCase("d")) {
+						if (inputData.indexOf("-d") != -1 || inputData.indexOf("-D") != -1) {
+							int index1 = inputData.indexOf("-d") == -1 ? inputData.indexOf("-D")
+									: inputData.indexOf("-d");
+							int index2 = inputData.indexOf("}", index1 + 3);
+							String data = inputData.substring(index1 + 5, index2);
+							for (String d : data.split(","))
+								dataList.add(d);
+							inputData = inputData.substring(index1 + 3 + data.length(), inputData.length());
+						}
+					} else if (inputData.substring(i + 1, i + 2).equalsIgnoreCase("f")) {
+						if (inputData.indexOf("-f") != -1 || inputData.indexOf("-F") != -1) {
+							int index1 = inputData.indexOf("-f") == -1 ? inputData.indexOf("-F")
+									: inputData.indexOf("-f");
+							int index2 = inputData.indexOf("'", index1 + 4);
+							String fileData = inputData.substring(index1 + 4, index2);
+							fileList.add(fileData);
+							inputData = inputData.substring(index1 + 4 + fileData.length(), inputData.length());
+						}
+					}
 				}
 			}
-
 		}
 
 		/*
