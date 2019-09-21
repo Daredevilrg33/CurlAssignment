@@ -21,11 +21,11 @@ public class PostRequestExample {
 
 			InetAddress addr = InetAddress.getByName(hostname);
 			Socket socket = new Socket(addr, port);
-			String path = "/get";
+			String path = "/post";
 
 			// Send headers
 			BufferedWriter wr = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF8"));
-			wr.write("GET " + path + " HTTP/1.0\r\n");
+			wr.write("POST " + path + " HTTP/1.0\r\n");
 			wr.write("Host: httpbin.org\r\n");
 			wr.write("Content-Length: " + params.length() + "\r\n");
 			wr.write("Content-Type: application/json\r\n");

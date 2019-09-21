@@ -33,8 +33,8 @@ public class GETRequestExample {
 			wr.write("\r\n");
 
 			// Send parameters
-//			wr.write(params);
-			wr.flush();
+			//wr.write(params);
+			//wr.flush();
 
 			// Get response
 			BufferedReader rd = new BufferedReader(new InputStreamReader(socket.getInputStream()));
