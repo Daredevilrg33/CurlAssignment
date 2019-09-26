@@ -1,11 +1,7 @@
 package main;
 
-import java.io.IOException;
-import java.net.URLEncoder;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Scanner;
-
-import javax.print.DocFlavor.INPUT_STREAM;
 
 public class MainDriver {
 
@@ -14,111 +10,89 @@ public class MainDriver {
 		// httpc (get|post) [-v] (-h "k:v")* [-d inline-data] [-f file] URL
 		System.out.println("Welcome to the Curl Terminal");
 		System.out.println("Please enter the Curl Command");
+//httpc post -h Content-Type:application/json -d '{"Assignment": 1}' -f 'C:/Users/Nancy Goyal/Contacts/Desktop/compnetw/hello.txt' http://httpbin.org/post
+		while (true) {
+			Scanner scanner = new Scanner(System.in);
+			String inputData = scanner.nextLine();
+			if (inputData.trim().toLowerCase().contains("help")) {
+				String sb = "";
+				if (inputData.trim().equalsIgnoreCase("httpc help")) {
+					sb = "httpc is a curl-like application but supports HTTP protocol only." + "\n" + " Usage:" + "\n"
+							+ " httpc command [arguments]" + "\n" + "The commands are: " + "\n" + "get" + "\t"
+							+ " executes a HTTP GET request and prints the response." + "\n" + "post" + "\t"
+							+ " executes a HTTP POST request and prints the response." + "\n" + "help" + "\t"
+							+ " prints this screen." + "\n"
+							+ "Use \"httpc help [command]\" for more information about a command.";
 
-		// try {
-		// //httpc httpObj = new httpc();
-		// } catch (IOException e) {
-		// e.printStackTrace();
-		// }
-
-		Scanner scanner = new Scanner(System.in);
-		String inputData = scanner.nextLine();
-		String http = "", requestType = "";
-		ArrayList<String> headerList = new ArrayList<String>();
-		ArrayList<String> dataList = new ArrayList<String>();
-		ArrayList<String> fileList = new ArrayList<String>();
-		boolean verbose = false;
-		int ind = 0;
-
-		if (inputData.indexOf("httpc") != -1) {
-			http = "httpc";
-		} else
-			System.out.println("Inappropriate command");
-		if (inputData.indexOf("get") != -1 || inputData.indexOf("GET") != -1) {
-			requestType = "get";
-			ind = inputData.indexOf("get");
-			ind = ind + 4;
-			inputData = inputData.substring(ind, inputData.length());
-		} else if (inputData.indexOf("post") != -1 || inputData.indexOf("POST") != -1) {
-			requestType = "post";
-			ind = inputData.indexOf("post");
-			ind = ind + 5;
-			inputData = inputData.substring(ind, inputData.length());
-		}
-		if (inputData.indexOf("-v") != -1 || inputData.indexOf("-V") != -1) {
-			verbose = true;
-		}
-
-		for (int i = 0; i < inputData.length(); i++) {
-
-			if (inputData.substring(i, i + 1).equals("-")) {
-				if (inputData.substring(i + 1, i + 2).equalsIgnoreCase("h")) {
-					if (inputData.indexOf("-h") != -1 || inputData.indexOf("-H") != -1) {
-						int index1 = inputData.indexOf("-h") == -1 ? inputData.indexOf("-H") : inputData.indexOf("-h");
-						int index2 = inputData.indexOf(" ", index1 + 3);
-						String header = inputData.substring(index1 + 3, index2);
-						headerList.add(header);
-						inputData = inputData.substring(index1 + 3 + header.length(), inputData.length());
-					}
+				} else if (inputData.trim().equalsIgnoreCase("httpc help get")) {
+					sb = "usage: httpc get [-v] [-h key:value] URL" + "\n"
+							+ "Get executes a HTTP GET request for a given URL." + "\n" + "-v" + "\t\t"
+							+ "Prints the detail of the response such as protocol, status, and headers." + "\n"
+							+ "-h key:value" + "\n" + "Associates headers to HTTP Request with the format 'key:value'.";
+				} else if (inputData.trim().equalsIgnoreCase("httpc help post")) {
+					sb = "usage: httpc post [-v] [-h key:value] [-d inline-data] [-f file] URL" + "\n"
+							+ "Post executes a HTTP POST request for a given URL with inline data or from file." + "\n"
+							+ "-v" + "\t\t" + "Prints the detail of the response such as protocol, status, and headers."
+							+ "\n" + " -h key:value" + "\t"
+							+ "Associates headers to HTTP Request with the format 'key:value'." + "\n" + "-d string"
+							+ "\t" + "Associates an inline data to the body HTTP POST request." + "\n"
+							+ "-f file Associates the content of a file to the body HTTP POST request." + "\n"
+							+ "Either [-d] or [-f] can be used but not both.";
 				}
-			}
-			
-			if (requestType.equalsIgnoreCase("get")) {
-				if (inputData.indexOf("-d") != -1 || inputData.indexOf("-D") != -1 || inputData.indexOf("-f") != -1
-						|| inputData.indexOf("-F") != -1) {
-					System.out.println("Inappropriate command");
-					break;
-				}
+
+				System.out.println(sb);
 			} else {
-				if (inputData.substring(i, i + 1).equals("-")) {
-					if (inputData.substring(i + 1, i + 2).equalsIgnoreCase("d")) {
-						if (inputData.indexOf("-d") != -1 || inputData.indexOf("-D") != -1) {
-							int index1 = inputData.indexOf("-d") == -1 ? inputData.indexOf("-D")
-									: inputData.indexOf("-d");
-							int index2 = inputData.indexOf("}", index1 + 3);
-							String data = inputData.substring(index1 + 5, index2);
-							for (String d : data.split(","))
-								dataList.add(d);
-							inputData = inputData.substring(index1 + 3 + data.length(), inputData.length());
-						}
-					} else if (inputData.substring(i + 1, i + 2).equalsIgnoreCase("f")) {
-						if (inputData.indexOf("-f") != -1 || inputData.indexOf("-F") != -1) {
-							int index1 = inputData.indexOf("-f") == -1 ? inputData.indexOf("-F")
-									: inputData.indexOf("-f");
-							int index2 = inputData.indexOf("'", index1 + 4);
-							String fileData = inputData.substring(index1 + 4, index2);
-							fileList.add(fileData);
-							inputData = inputData.substring(index1 + 4 + fileData.length(), inputData.length());
-						}
+				String[] test = inputData.split(" ");
+				String url = test[test.length - 1];
+				inputData = inputData.replaceAll(url, "");
+				String[] inputs = inputData.split(" -");
+				String[] httpRequestType = inputs[0].split(" ");
+				String http = httpRequestType[0];
+				String requestType = httpRequestType[1];
+				HashMap<String, String> headerHashMap = new HashMap<String, String>();
+				HashMap<String, String> dataHashMap = new HashMap<String, String>();
+				String file = "";
+
+				for (int i = 1; i < inputs.length; i++) {
+					String[] data = inputs[i].split(" ");
+					if (data[0].equalsIgnoreCase("h")) {
+						String[] header = data[1].split(":");
+						headerHashMap.put(header[0].trim(), header[1].trim());
 					}
+					if (data[0].equalsIgnoreCase("d")) {
+						String vall = "";
+						for (int j = 1; j < data.length; j++) {
+							vall = vall.concat(data[j]);
+						}
+						String dataValue = vall.replaceAll("\\}", "").replaceAll("'", "").replaceAll("\"", "")
+								.replaceAll("\\{", "");
+						String[] allData = dataValue.split(",");
+						for (String deta : allData) {
+							String[] d = deta.split(":");
+							dataHashMap.put(d[0].trim(), d[1].trim());
+						}
+
+					}
+
+					if (data[0].equalsIgnoreCase("f")) {
+
+						for (int j = 1; j < data.length; j++) {
+							file = file.concat(data[j]);
+						}
+						file = file.replaceAll("\'", "").trim();
+					}
+
 				}
+
+				System.out.println(headerHashMap);
+				System.out.println(dataHashMap);
+				System.out.println(http);
+				System.out.println(requestType);
+				System.out.println(file);
+				System.out.println(url);
+
 			}
 		}
-
-		/*
-		 * for (int i = 2; i < input.length; i++) {
-		 * 
-		 * if(requestType.equalsIgnoreCase("post")) {
-		 * if(input[i].equalsIgnoreCase("-d")) { dataList.add(input[i+1]); } else
-		 * if(input[i].equalsIgnoreCase("-f")) { fileList.add(input[i+1]); }
-		 * 
-		 * } else { System.out.println("not an appropriate command"); }
-		 * if(input[i].equalsIgnoreCase("-v")) { verbose=true; }
-		 * if(input[i].equalsIgnoreCase("-h")) { headerList.add(input[i+1]); }
-		 * 
-		 * 
-		 * }
-		 */
-
-		System.out.println("http: " + http);
-		System.out.println("verbose " + verbose);
-		System.out.println("requestType: " + requestType);
-		System.out.println("url: " + inputData.substring(inputData.lastIndexOf(" "), inputData.length()));
-		System.out.println("headerList: " + headerList.toString());
-		for (String d : dataList)
-			System.out.println("dataList: " + d);
-
-		System.out.println("fileList: " + fileList.toString());
 
 	}
 }
