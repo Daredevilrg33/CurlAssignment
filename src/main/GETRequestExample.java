@@ -27,9 +27,10 @@ public class GETRequestExample {
 			// Send headers
 			BufferedWriter wr = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF8"));
 			wr.write("GET " + "/get?course=networking&assignment=1" + " HTTP/1.0\r\n");
+			wr.write("GET " + "/absolute-redirect/2" + " HTTP/1.0\r\n");
 			wr.write("Host: httpbin.org\r\n");
-			wr.write("Content-Length: " + params.length() + "\r\n");
-			wr.write("Content-Type: application/json\r\n");
+//			wr.write("Content-Length: " + params.length() + "\r\n");
+			wr.write("Content-Type: text/html\r\n");
 			wr.write("\r\n");
 
 			// Send parameters
