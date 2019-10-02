@@ -33,6 +33,7 @@ public class MainDriver {
 				String url = "";
 				for (String str : test) {
 					str = str.replaceAll("'", "").trim();
+					str = str.replaceAll("\"", "").strip();
 					if (str.matches(
 							"^(http:\\/\\/www\\.|https:\\/\\/www\\.|http:\\/\\/|https:\\/\\/|www\\.)+[a-z0-9]+([\\-\\.]{1}[a-z0-9]+)*\\.[a-z]{2,5}(:[0-9]{1,5})?(\\/.*)?$")) {
 						url = str;
@@ -52,7 +53,14 @@ public class MainDriver {
 				for (int i = 1; i < inputs.length; i++) {
 					String[] data = inputs[i].split(" ");
 					if (data[0].equalsIgnoreCase("h")) {
-						String[] header = data[1].split(":");
+						String val = "";
+						for (int j = 1; j < data.length; j++) {
+							val = val.concat(data[j]);
+						}
+						val = val.replaceAll("\"", "");
+						val = val.replaceAll("'", "");
+
+						String[] header = val.split(":");
 						headerHashMap.put(header[0].trim(), header[1].trim());
 					}
 					if (data[0].equalsIgnoreCase("d")) {
@@ -90,6 +98,7 @@ public class MainDriver {
 				System.out.println(requestType);
 				System.out.println(file);
 				System.out.println(url);
+				
 
 				url = url.replaceAll("'", "");
 				String properURL = "";
@@ -103,7 +112,7 @@ public class MainDriver {
 				}
 				System.out.println(properURL);
 				System.out.println(queryParams);
-				String[] checkVal = properURL.split("[^a-zA-Z0-9.]");
+				String[] checkVal = properURL.split("[^a-zA-Z0-9.-]");
 				String hostName = "";
 				String methodName = "";
 				for (int i = 1; i < checkVal.length; i++) {

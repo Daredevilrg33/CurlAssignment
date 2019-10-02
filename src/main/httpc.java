@@ -10,6 +10,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.URLEncoder;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 
 public class httpc {
@@ -22,21 +23,27 @@ public class httpc {
 	private static BufferedWriter out;
 	private static BufferedReader in;
 	private static String fileName = "";
+	private static int port = 80;
+	private static String queryParameters = "";
 
 	public httpc(String url) throws IOException {
 		hashMapHeaders = new HashMap<>();
+		params = "";
+		fileName = "";
+
 //		String hostname = "www.httpbin.org";
 		if (!url.contains("www.")) {
 			url = "www." + url.strip();
 		}
-		int port = 80;
-		params = "";
-		fileName = "";
+		initializeSocket(url);
+	}
+
+	private static void initializeSocket(String url) throws IOException {
+		// TODO Auto-generated method stub
 		InetAddress addr = InetAddress.getByName(url);
 		Socket socket = new Socket(addr, port);
 		out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF8"));
 		in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
 	}
 
 	public static void close() throws IOException {
@@ -63,14 +70,14 @@ public class httpc {
 		}
 
 		if (params.charAt(params.length() - 1) == '&') {
-			params = params.substring(0, params.length() - 2);
+			params = params.substring(0, params.length() - 1);
 		}
 		return params;
 	}
 
 	public static String sendGETRequest(String queryParams) throws IOException {
 		System.out.println("GET * Request");
-
+		queryParameters = queryParams;
 		String path = "";
 		path = "/" + getMethodName();
 		if (queryParams.strip().length() > 0)
@@ -80,8 +87,8 @@ public class httpc {
 		out.write("GET " + path + " HTTP/1.0\r\n");
 		out.write("Host: httpbin.org\r\n");
 		HashMap<String, String> headers = getHashMapHeaders();
-		if (headers.isEmpty() || !headers.containsKey("Content-Type"))
-			headers.put("Content-Type", "application/json");
+//		if (headers.isEmpty() || !headers.containsKey("Content-Type"))
+//			headers.put("Content-Type", "application/json");
 		for (String key : headers.keySet()) {
 			out.write(key + ": " + headers.get(key) + "\r\n");
 		}
@@ -90,7 +97,9 @@ public class httpc {
 		out.write("\r\n");
 		out.flush();
 		String response = readResponse(in);
-		;
+		if (responseParser(response)) {
+			return response;
+		}
 		if (enableFileWrite) {
 
 			writeToFile(fileName, response);
@@ -116,13 +125,13 @@ public class httpc {
 		for (String key : headers.keySet()) {
 			out.write(key + ": " + headers.get(key) + "\r\n");
 		}
-
+		if (params.length() > 0)
+			out.write(params);
 //		out.write("Content-Type: application/json\r\n");
 //		out.write("User-Agent: Concordia-HTTP/1.0\r\n");
 		out.write("\r\n");
 		// Send parameters
-		if (params.length() > 0)
-			out.write(params);
+
 		out.flush();
 		String response = readResponse(in);
 		if (enableFileWrite) {
@@ -145,6 +154,7 @@ public class httpc {
 		String line;
 		boolean isResponse = false;
 		while ((line = in.readLine()) != null) {
+
 			if (enableHeaders) {
 				response += line + "\n";
 			} else {
@@ -218,8 +228,65 @@ public class httpc {
 		writer.close();
 	}
 
-	private boolean responseParser(String response) {
+	private static boolean responseParser(String response) {
 		boolean isValidResponse = false;
+		String[] splitResponse = response.split("\n");
+		for (int i = 0; i < splitResponse.length; i++) {
+			String str = splitResponse[i];
+			if (i == 0) {
+				String[] data = str.split(" ");
+				if (Integer.parseInt(data[1]) >= 300 && Integer.parseInt(data[1]) < 306) {
+					isValidResponse = false;
+				} else {
+					isValidResponse = true;
+				}
+			} else if (!isValidResponse) {
+				String[] arr = str.split(":");
+				if (arr[0].equalsIgnoreCase("location")) {
+					String d = "";
+					for (int j = 1; j < arr.length; j++)
+						d = d.concat(arr[j] + ":");
+					try {
+						d = d.substring(0, d.length() - 1);
+						System.out.println(d);
+						d = parseURL(d);
+						initializeSocket(d);
+						if (requestType.equalsIgnoreCase("GET")) {
+							sendGETRequest(queryParameters);
+						} else {
+							sendPOSTRequest();
+						}
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		}
 		return isValidResponse;
+	}
+
+	public static String parseURL(String url) {
+		String[] checkVal = url.split("[^a-zA-Z0-9.-]");
+		String hostName = "";
+		String methodName = "";
+		for (int i = 1; i < checkVal.length; i++) {
+			String s = checkVal[i];
+			if (!s.isBlank()) {
+				if (s.contains(".")) {
+					hostName = s;
+				} else {
+					methodName = methodName.concat(s + "/");
+				}
+			}
+		}
+
+		if (methodName.charAt(methodName.length() - 1) == '/') {
+			methodName = methodName.substring(0, methodName.length() - 1);
+		}
+		System.out.println("HostName : " + hostName);
+		System.out.println("Method Name : " + methodName);
+		httpc.methodName = methodName;
+		return hostName;
 	}
 }
