@@ -33,7 +33,7 @@ public class MainDriver {
 				String url = "";
 				for (String str : test) {
 					str = str.replaceAll("'", "").trim();
-					str = str.replaceAll("\"", "").strip();
+					str = str.replaceAll("\"", "").trim();
 					if (str.matches(
 							"^(http:\\/\\/www\\.|https:\\/\\/www\\.|http:\\/\\/|https:\\/\\/|www\\.)+[a-z0-9]+([\\-\\.]{1}[a-z0-9]+)*\\.[a-z]{2,5}(:[0-9]{1,5})?(\\/.*)?$")) {
 						url = str;
@@ -42,6 +42,11 @@ public class MainDriver {
 				}
 				inputData = inputData.replaceAll(url, "");
 				String[] inputs = inputData.split(" -");
+				for(int i=0;i<inputs.length;i++)
+				{
+					System.out.println("*********"+inputs[i]);	
+				}
+				
 				String[] httpRequestType = inputs[0].split(" ");
 				String http = httpRequestType[0];
 				String requestType = httpRequestType[1];
@@ -50,6 +55,7 @@ public class MainDriver {
 				HashMap<String, String> headerHashMap = new HashMap<String, String>();
 				HashMap<String, String> dataHashMap = new HashMap<String, String>();
 				String file = "";
+				String OutputFileName = "";
 				for (int i = 1; i < inputs.length; i++) {
 					String[] data = inputs[i].split(" ");
 					if (data[0].equalsIgnoreCase("h")) {
@@ -87,6 +93,10 @@ public class MainDriver {
 						enableVerbose = true;
 					}
 					if (data[0].equalsIgnoreCase("o")) {
+						for (int j = 1; j < data.length; j++) {
+							OutputFileName = OutputFileName.concat(data[j]);
+						}
+						
 						enableFileWrite = true;
 					}
 				}
@@ -117,7 +127,7 @@ public class MainDriver {
 				String methodName = "";
 				for (int i = 1; i < checkVal.length; i++) {
 					String s = checkVal[i];
-					if (!s.isBlank()) {
+					if (!s.isEmpty()) {
 						if (s.contains(".")) {
 							hostName = s;
 						} else {
@@ -136,8 +146,10 @@ public class MainDriver {
 					httpcObj = new httpc(hostName);
 					if (enableVerbose)
 						httpc.enableHeaders = true;
-					if (enableFileWrite)
+					if (enableFileWrite) {
+						httpcObj.setFileName(OutputFileName);
 						httpc.enableFileWrite = true;
+					}
 
 					if (requestType.equalsIgnoreCase("get")) {
 						httpcObj.setRequestType("GET");

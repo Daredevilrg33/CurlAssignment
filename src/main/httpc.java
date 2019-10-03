@@ -2,6 +2,8 @@ package main;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -11,7 +13,9 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class httpc {
 	private static String methodName;
@@ -31,15 +35,16 @@ public class httpc {
 		params = "";
 		fileName = "";
 
-//		String hostname = "www.httpbin.org";
+		// String hostname = "www.httpbin.org";
 		if (!url.contains("www.")) {
-			url = "www." + url.strip();
+			url = "www." + url.trim();
 		}
 		initializeSocket(url);
 	}
 
 	private static void initializeSocket(String url) throws IOException {
 		// TODO Auto-generated method stub
+		System.out.println(url);
 		InetAddress addr = InetAddress.getByName(url);
 		Socket socket = new Socket(addr, port);
 		out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF8"));
@@ -80,30 +85,34 @@ public class httpc {
 		queryParameters = queryParams;
 		String path = "";
 		path = "/" + getMethodName();
-		if (queryParams.strip().length() > 0)
+		if (queryParams.trim().length() > 0)
 			path = path.concat("?" + queryParams);
 
 		// Send headers
 		out.write("GET " + path + " HTTP/1.0\r\n");
 		out.write("Host: httpbin.org\r\n");
 		HashMap<String, String> headers = getHashMapHeaders();
-//		if (headers.isEmpty() || !headers.containsKey("Content-Type"))
-//			headers.put("Content-Type", "application/json");
 		for (String key : headers.keySet()) {
 			out.write(key + ": " + headers.get(key) + "\r\n");
 		}
-//		out.write("Content-Type: application/json" + "\r\n");
-//		out.write("User-Agent: Concordia-HTTP/1.0\r\n");
 		out.write("\r\n");
 		out.flush();
 		String response = readResponse(in);
+		System.out.println("response in sendGETRequest "+response);
+		
 		if (responseParser(response)) {
-			return response;
-		}
-		if (enableFileWrite) {
+			if (enableFileWrite) {
 
-			writeToFile(fileName, response);
+				writeToFile(fileName, response);
+				return "";
+			}
+			else
+			{
+				
+			return response;
+			}
 		}
+		
 		return response;
 	}
 
@@ -127,8 +136,6 @@ public class httpc {
 		}
 		if (params.length() > 0)
 			out.write(params);
-//		out.write("Content-Type: application/json\r\n");
-//		out.write("User-Agent: Concordia-HTTP/1.0\r\n");
 		out.write("\r\n");
 		// Send parameters
 
@@ -158,7 +165,7 @@ public class httpc {
 			if (enableHeaders) {
 				response += line + "\n";
 			} else {
-				if (line.strip().length() == 0) {
+				if (line.trim().length() == 0) {
 					isResponse = true;
 				}
 				if (isResponse)
@@ -208,24 +215,31 @@ public class httpc {
 	private static HashMap<String, String> getHashMapHeaders() {
 		return hashMapHeaders;
 	}
-//    private static List<String> getContents(File file) throws IOException {
-//        List<String> contents = new ArrayList<String>();
-//        
-//        BufferedReader input = new BufferedReader(new FileReader(file));
-//        String line;
-//        while ((line = input.readLine()) != null) {
-//            contents.add(line);
-//        }
-//        input.close();
-//        
-//        return contents;
-//    }
+	
+	 private static List<String> getContents(File file) throws IOException {
+	 List<String> contents = new ArrayList<String>();
+	
+	 BufferedReader input = new BufferedReader(new FileReader(file));
+	 String line;
+	 while ((line = input.readLine()) != null) {
+	 contents.add(line);
+	 }
+	 input.close();
+	
+	 return contents;
+	 }
 
 	private static void writeToFile(String fileName, String response) throws IOException {
-		BufferedWriter writer = new BufferedWriter(new FileWriter(fileName));
-		writer.write(response);
-
-		writer.close();
+		BufferedWriter writer = null;
+		try {
+			writer = new BufferedWriter(new FileWriter(new File(fileName)));
+			writer.write(response);
+		} catch (IOException ex) {
+			System.err.println("An IOException was caught!");
+			ex.printStackTrace();
+		} finally {
+			writer.close();
+		}
 	}
 
 	private static boolean responseParser(String response) {
@@ -272,7 +286,7 @@ public class httpc {
 		String methodName = "";
 		for (int i = 1; i < checkVal.length; i++) {
 			String s = checkVal[i];
-			if (!s.isBlank()) {
+			if (!s.isEmpty()) {
 				if (s.contains(".")) {
 					hostName = s;
 				} else {
