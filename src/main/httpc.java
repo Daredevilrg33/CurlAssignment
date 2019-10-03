@@ -71,6 +71,7 @@ public class httpc {
 	public static void setFileName(String file) {
 		fileName = file;
 	}
+
 	public static void setInputFileName(String file) {
 		inputFileName = file;
 	}
@@ -82,7 +83,7 @@ public class httpc {
 					.concat(URLEncoder.encode(key, "UTF-8") + "=" + URLEncoder.encode(hashMap.get(key), "UTF-8") + "&");
 		}
 
-		if (params.length()>0 && params.charAt(params.length() - 1) == '&') {
+		if (params.length() > 0 && params.charAt(params.length() - 1) == '&') {
 			params = params.substring(0, params.length() - 1);
 		}
 		return params;
@@ -106,21 +107,32 @@ public class httpc {
 		out.write("\r\n");
 		out.flush();
 		String response = readResponse(in);
-		System.out.println("response in sendGETRequest "+response);
-		
+		System.out.println("response in sendGETRequest " + response);
+		boolean isResponse = false;
+		String verboseResponse = "";
 		if (responseParser(response)) {
+			if (!enableHeaders) {
+				for (String str : response.split("\n")) {
+					if (isResponse)
+						verboseResponse = verboseResponse.concat(str + "\n");
+					if (str.trim().length() <= 0) {
+						isResponse = true;
+					}
+				}
+			}
+
+			if (!enableHeaders)
+				response = verboseResponse;
 			if (enableFileWrite) {
 
 				writeToFile(fileName, response);
 				return "";
-			}
-			else
-			{
-				
-			return response;
+			} else {
+
+				return response;
 			}
 		}
-		
+
 		return response;
 	}
 
@@ -138,7 +150,7 @@ public class httpc {
 		}
 		String fileContent = "";
 		if (enableFileRead) {
-		 fileContent = getContents(inputFileName);
+			fileContent = getContents(inputFileName);
 		}
 		if (fileContent.length() > 0) {
 			out.write("Content-Length: " + fileContent.length() + "\r\n");
@@ -154,7 +166,7 @@ public class httpc {
 			out.write(params);
 		if (fileContent.length() > 0)
 			out.write(params);
-		
+
 		out.write("\r\n");
 		// Send parameters
 
@@ -164,10 +176,8 @@ public class httpc {
 			if (enableFileWrite) {
 				writeToFile(fileName, response);
 				return "";
-			}
-			else
-			{
-			return response;
+			} else {
+				return response;
 			}
 		}
 		return response;
@@ -185,21 +195,13 @@ public class httpc {
 		System.out.println("\n * Response");
 		String response = "";
 		String line;
-		boolean isResponse = false;
+
 		while ((line = in.readLine()) != null) {
-
-			if (enableHeaders) {
-				response += line + "\n";
-			} else {
-				if (line.trim().length() == 0) {
-					isResponse = true;
-				}
-				if (isResponse)
-					response += line + "\n";
-			}
-
+			response += line + "\n";
 		}
+
 		return response;
+
 	}
 
 	public static String help() {
@@ -241,18 +243,18 @@ public class httpc {
 	private static HashMap<String, String> getHashMapHeaders() {
 		return hashMapHeaders;
 	}
-	
-	 private static String getContents(String filePath) throws IOException {
-	 List<String> contents = new ArrayList<String>();
-	 BufferedReader input = new BufferedReader(new FileReader("./"+filePath));
-	 String line;
-	 while ((line = input.readLine()) != null) {
-	 contents.add(line);
-	 }
-	 input.close();
-	
-	 return contents.toString();
-	 }
+
+	private static String getContents(String filePath) throws IOException {
+		List<String> contents = new ArrayList<String>();
+		BufferedReader input = new BufferedReader(new FileReader("./" + filePath));
+		String line;
+		while ((line = input.readLine()) != null) {
+			contents.add(line);
+		}
+		input.close();
+
+		return contents.toString();
+	}
 
 	private static void writeToFile(String fileName, String response) throws IOException {
 		BufferedWriter writer = null;
