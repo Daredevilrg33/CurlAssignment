@@ -23,10 +23,12 @@ public class httpc {
 	private static String params;
 	public static boolean enableHeaders = false;
 	public static boolean enableFileWrite = false;
+	public static boolean enableFileRead = false;
 	private static HashMap<String, String> hashMapHeaders;
 	private static BufferedWriter out;
 	private static BufferedReader in;
 	private static String fileName = "";
+	private static String inputFileName = "";
 	private static int port = 80;
 	private static String queryParameters = "";
 
@@ -34,6 +36,7 @@ public class httpc {
 		hashMapHeaders = new HashMap<>();
 		params = "";
 		fileName = "";
+		inputFileName = "";
 
 		// String hostname = "www.httpbin.org";
 		if (!url.contains("www.")) {
@@ -53,18 +56,23 @@ public class httpc {
 
 	public static void close() throws IOException {
 		enableFileWrite = false;
+		enableFileRead = false;
 		enableHeaders = false;
 		requestType = "";
 		params = "";
 		methodName = "";
 		hashMapHeaders.clear();
 		fileName = "";
+		inputFileName = "";
 		out.close();
 		in.close();
 	}
 
 	public static void setFileName(String file) {
 		fileName = file;
+	}
+	public static void setInputFileName(String file) {
+		inputFileName = file;
 	}
 
 	public String setParams(HashMap<String, String> hashMap) throws UnsupportedEncodingException {
@@ -74,7 +82,7 @@ public class httpc {
 					.concat(URLEncoder.encode(key, "UTF-8") + "=" + URLEncoder.encode(hashMap.get(key), "UTF-8") + "&");
 		}
 
-		if (params.charAt(params.length() - 1) == '&') {
+		if (params.length()>0 && params.charAt(params.length() - 1) == '&') {
 			params = params.substring(0, params.length() - 1);
 		}
 		return params;
@@ -128,6 +136,14 @@ public class httpc {
 			out.write("Content-Length: " + params.length() + "\r\n");
 
 		}
+		String fileContent = "";
+		if (enableFileRead) {
+		 fileContent = getContents(inputFileName);
+		}
+		if (fileContent.length() > 0) {
+			out.write("Content-Length: " + fileContent.length() + "\r\n");
+
+		}
 		HashMap<String, String> headers = getHashMapHeaders();
 		if (headers.isEmpty() || !headers.containsKey("Content-Type"))
 			headers.put("Content-Type", "application/json");
@@ -136,13 +152,23 @@ public class httpc {
 		}
 		if (params.length() > 0)
 			out.write(params);
+		if (fileContent.length() > 0)
+			out.write(params);
+		
 		out.write("\r\n");
 		// Send parameters
 
 		out.flush();
 		String response = readResponse(in);
-		if (enableFileWrite) {
-			writeToFile(fileName, response);
+		if (responseParser(response)) {
+			if (enableFileWrite) {
+				writeToFile(fileName, response);
+				return "";
+			}
+			else
+			{
+			return response;
+			}
 		}
 		return response;
 	}
@@ -216,17 +242,16 @@ public class httpc {
 		return hashMapHeaders;
 	}
 	
-	 private static List<String> getContents(File file) throws IOException {
+	 private static String getContents(String filePath) throws IOException {
 	 List<String> contents = new ArrayList<String>();
-	
-	 BufferedReader input = new BufferedReader(new FileReader(file));
+	 BufferedReader input = new BufferedReader(new FileReader("./"+filePath));
 	 String line;
 	 while ((line = input.readLine()) != null) {
 	 contents.add(line);
 	 }
 	 input.close();
 	
-	 return contents;
+	 return contents.toString();
 	 }
 
 	private static void writeToFile(String fileName, String response) throws IOException {

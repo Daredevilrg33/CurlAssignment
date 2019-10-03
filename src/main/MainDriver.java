@@ -52,10 +52,12 @@ public class MainDriver {
 				String requestType = httpRequestType[1];
 				boolean enableVerbose = false;
 				boolean enableFileWrite = false;
+				boolean enableFileRead = false;
 				HashMap<String, String> headerHashMap = new HashMap<String, String>();
 				HashMap<String, String> dataHashMap = new HashMap<String, String>();
 				String file = "";
 				String OutputFileName = "";
+				String InputFileName = "";
 				for (int i = 1; i < inputs.length; i++) {
 					String[] data = inputs[i].split(" ");
 					if (data[0].equalsIgnoreCase("h")) {
@@ -99,9 +101,17 @@ public class MainDriver {
 						
 						enableFileWrite = true;
 					}
+					if (data[0].equalsIgnoreCase("f")) {
+						for (int j = 1; j < data.length; j++) {
+							InputFileName = InputFileName.concat(data[j]);
+						}
+						
+						enableFileRead = true;
+					}
 				}
 				System.out.println(enableVerbose);
 				System.out.println(enableFileWrite);
+				System.out.println(enableFileRead);
 				System.out.println(headerHashMap);
 				System.out.println(dataHashMap);
 				System.out.println(http);
@@ -149,6 +159,10 @@ public class MainDriver {
 					if (enableFileWrite) {
 						httpcObj.setFileName(OutputFileName);
 						httpc.enableFileWrite = true;
+					}
+					if (enableFileRead) {
+						httpcObj.setInputFileName(InputFileName);
+						httpc.enableFileRead = true;
 					}
 
 					if (requestType.equalsIgnoreCase("get")) {
