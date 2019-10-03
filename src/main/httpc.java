@@ -31,6 +31,7 @@ public class httpc {
 	private static String inputFileName = "";
 	private static int port = 80;
 	private static String queryParameters = "";
+	public static String inLineData = "";;
 
 	public httpc(String url) throws IOException {
 		hashMapHeaders = new HashMap<>();
@@ -107,7 +108,6 @@ public class httpc {
 		out.write("\r\n");
 		out.flush();
 		String response = readResponse(in);
-		System.out.println("response in sendGETRequest " + response);
 		boolean isResponse = false;
 		String verboseResponse = "";
 		if (responseParser(response)) {
@@ -144,6 +144,8 @@ public class httpc {
 		// Send headers
 		out.write("POST " + path + " HTTP/1.0\r\n");
 		out.write("Host: httpbin.org\r\n");
+		if (inLineData.length() > 0)
+			out.write(inLineData + "\r\n");
 		if (params.length() > 0) {
 			out.write("Content-Length: " + params.length() + "\r\n");
 
@@ -172,14 +174,31 @@ public class httpc {
 
 		out.flush();
 		String response = readResponse(in);
+		boolean isResponse = false;
+		String verboseResponse = "";
 		if (responseParser(response)) {
+			if (!enableHeaders) {
+				for (String str : response.split("\n")) {
+					if (isResponse)
+						verboseResponse = verboseResponse.concat(str + "\n");
+					if (str.trim().length() <= 0) {
+						isResponse = true;
+					}
+				}
+			}
+
+			if (!enableHeaders)
+				response = verboseResponse;
 			if (enableFileWrite) {
+
 				writeToFile(fileName, response);
 				return "";
 			} else {
+
 				return response;
 			}
 		}
+
 		return response;
 	}
 

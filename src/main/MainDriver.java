@@ -55,6 +55,7 @@ public class MainDriver {
 				boolean enableFileRead = false;
 				HashMap<String, String> headerHashMap = new HashMap<String, String>();
 				HashMap<String, String> dataHashMap = new HashMap<String, String>();
+				String inLineData = "";
 				String file = "";
 				String OutputFileName = "";
 				String InputFileName = "";
@@ -74,8 +75,9 @@ public class MainDriver {
 					if (data[0].equalsIgnoreCase("d")) {
 						String vall = "";
 						for (int j = 1; j < data.length; j++) {
-							vall = vall.concat(data[j]);
+							vall = vall.concat(data[j] + " ");
 						}
+						inLineData = vall.trim();
 						String dataValue = vall.replaceAll("\\}", "").replaceAll("'", "").replaceAll("\"", "")
 								.replaceAll("\\{", "");
 						String[] allData = dataValue.split(",");
@@ -109,6 +111,7 @@ public class MainDriver {
 						enableFileRead = true;
 					}
 				}
+				System.out.println("inLineData" + inLineData);
 				System.out.println(enableVerbose);
 				System.out.println(enableFileWrite);
 				System.out.println(enableFileRead);
@@ -118,7 +121,6 @@ public class MainDriver {
 				System.out.println(requestType);
 				System.out.println(file);
 				System.out.println(url);
-				
 
 				url = url.replaceAll("'", "");
 				String properURL = "";
@@ -174,7 +176,8 @@ public class MainDriver {
 						httpcObj.setRequestType("POST");
 						httpcObj.setMethodName(methodName);
 						httpcObj.setHashMapHeaders(headerHashMap);
-						httpcObj.setParams(dataHashMap);
+//						httpcObj.setParams(dataHashMap);
+						httpc.inLineData = inLineData;
 						response = httpc.sendPOSTRequest();
 					} else
 						System.out.println("Invalid request type.");
