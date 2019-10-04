@@ -249,7 +249,7 @@ public class httpc {
 		BufferedReader input = new BufferedReader(new FileReader("./" + filePath));
 		String line;
 		while ((line = input.readLine()) != null) {
-			contents = contents.concat(line + "\n");
+			contents = contents.concat(line);
 		}
 		input.close();
 
