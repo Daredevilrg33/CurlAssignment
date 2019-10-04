@@ -26,7 +26,8 @@ public class httpc {
 	private static String inputFileName = "";
 	private static int port = 80;
 	private static String queryParameters = "";
-	public static String inLineData = "";;
+	public static String inLineData = "";
+	public static String responseData = "";
 
 	public httpc(String url) throws IOException {
 		hashMapHeaders = new HashMap<>();
@@ -87,13 +88,14 @@ public class httpc {
 		}
 		out.write("\r\n");
 		out.flush();
-		String response = readResponse(in);
-		System.out.println(response);
+
+		responseData = readResponse(in);
+		// System.out.println("\n\n *** response sendGETRequest::: "+response);
 		boolean isResponse = false;
 		String verboseResponse = "";
-		if (responseParser(response)) {
+		if (responseParser()) {
 			if (!enableHeaders) {
-				for (String str : response.split("\n")) {
+				for (String str : responseData.split("\n")) {
 					if (isResponse)
 						verboseResponse = verboseResponse.concat(str + "\n");
 					if (str.trim().length() <= 0) {
@@ -103,18 +105,19 @@ public class httpc {
 			}
 
 			if (!enableHeaders)
-				response = verboseResponse;
+				responseData = verboseResponse;
 			if (enableFileWrite) {
 
-				writeToFile(fileName, response);
+				writeToFile(fileName, responseData);
 				return "";
 			} else {
 
-				return response;
+				return responseData;
 			}
+
 		}
 
-		return response;
+		return responseData;
 	}
 
 	public static String sendPOSTRequest() throws IOException {
@@ -153,13 +156,12 @@ public class httpc {
 			out.write(fileContent);
 
 		out.flush();
-		String response = readResponse(in);
-		System.out.println(response);
+		responseData = readResponse(in);
 		boolean isResponse = false;
 		String verboseResponse = "";
-		if (responseParser(response)) {
+		if (responseParser()) {
 			if (!enableHeaders) {
-				for (String str : response.split("\n")) {
+				for (String str : responseData.split("\n")) {
 					if (isResponse)
 						verboseResponse = verboseResponse.concat(str + "\n");
 					if (str.trim().length() <= 0) {
@@ -168,18 +170,18 @@ public class httpc {
 				}
 			}
 			if (!enableHeaders)
-				response = verboseResponse;
+				responseData = verboseResponse;
 			if (enableFileWrite) {
 
-				writeToFile(fileName, response);
+				writeToFile(fileName, responseData);
 				return "";
 			} else {
 
-				return response;
+				return responseData;
 			}
 		}
 
-		return response;
+		return responseData;
 	}
 
 	public void setMethodName(String methodName) {
@@ -267,9 +269,9 @@ public class httpc {
 		}
 	}
 
-	private static boolean responseParser(String response) {
+	private static boolean responseParser() {
 		boolean isValidResponse = false;
-		String[] splitResponse = response.split("\n");
+		String[] splitResponse = responseData.split("\n");
 		for (int i = 0; i < splitResponse.length; i++) {
 			String str = splitResponse[i];
 			if (i == 0) {
@@ -291,7 +293,8 @@ public class httpc {
 						d = parseURL(d);
 						initializeSocket(d);
 						if (requestType.equalsIgnoreCase("GET")) {
-							sendGETRequest(queryParameters);
+							responseData = sendGETRequest(queryParameters);
+							return true;
 						} else {
 							sendPOSTRequest();
 						}
@@ -306,7 +309,7 @@ public class httpc {
 	}
 
 	public static String parseURL(String url) {
-		String[] checkVal = url.split("[^a-zA-Z0-9.-]");
+		String[] checkVal = url.trim().split("[^a-zA-Z0-9.-]");
 		String hostName = "";
 		String methodName = "";
 		for (int i = 1; i < checkVal.length; i++) {
