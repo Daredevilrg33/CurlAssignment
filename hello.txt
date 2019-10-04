@@ -3,22 +3,27 @@ Access-Control-Allow-Credentials: true
 Access-Control-Allow-Origin: *
 Referrer-Policy: no-referrer-when-downgrade
 Content-Type: application/json
-Date: Fri, 04 Oct 2019 02:05:00 GMT
+Date: Fri, 04 Oct 2019 04:06:30 GMT
 Server: nginx
 X-Content-Type-Options: nosniff
 X-Frame-Options: DENY
 X-XSS-Protection: 1; mode=block
-Content-Length: 233
+Content-Length: 322
 Connection: keep-alive
 
 {
-  "args": {
-    "assignment": "1", 
-    "course": "networking"
-  }, 
+  "args": {}, 
+  "data": "{\"Assignment\": 1}", 
+  "files": {}, 
+  "form": {}, 
   "headers": {
+    "Content-Length": "17", 
+    "Content-Type": "application/json", 
     "Host": "httpbin.org"
   }, 
+  "json": {
+    "Assignment": 1
+  }, 
   "origin": "132.205.229.41, 132.205.229.41", 
-  "url": "https://httpbin.org/get?course=networking&assignment=1"
+  "url": "https://httpbin.org/post"
 }

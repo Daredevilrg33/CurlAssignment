@@ -39,6 +39,30 @@ public class MainDriver {
 								"^(http:\\/\\/www\\.|https:\\/\\/www\\.|http:\\/\\/|https:\\/\\/|www\\.)+[a-z0-9]+([\\-\\.]{1}[a-z0-9]+)*\\.[a-z]{2,5}(:[0-9]{1,5})?(\\/.*)?$")) {
 							url = str;
 
+//=======
+//				}
+//				inputData = inputData.replaceAll(url, "");
+//				String[] inputs = inputData.split(" -");
+//				String[] httpRequestType = inputs[0].split(" ");
+//				String http = httpRequestType[0];
+//				String requestType = httpRequestType[1];
+//				boolean enableVerbose = false;
+//				boolean enableFileWrite = false;
+//				boolean enableFileRead = false;
+//
+//				HashMap<String, String> headerHashMap = new HashMap<String, String>();
+//				HashMap<String, String> dataHashMap = new HashMap<String, String>();
+//				String inLineData = "";
+//				String file = "";
+//				String OutputFileName = "";
+//				String InputFileName = "";
+//				for (int i = 1; i < inputs.length; i++) {
+//					String[] data = inputs[i].split(" ");
+//					if (data[0].equalsIgnoreCase("h")) {
+//						String val = "";
+//						for (int j = 1; j < data.length; j++) {
+//							val = val.concat(data[j]);
+//>>>>>>> Stashed changes
 						}
 					}
 					inputData = inputData.replaceAll(url, "");
@@ -121,6 +145,9 @@ public class MainDriver {
 
 							enableFileRead = true;
 						}
+//=======
+//						enableFileRead = true;
+//>>>>>>> Stashed changes
 					}
 					
 					if(validCurl) {

@@ -26,15 +26,16 @@ public class httpc {
 	private static String inputFileName = "";
 	private static int port = 80;
 	private static String queryParameters = "";
-	public static String inLineData = "";
+
 	public static String responseData = "";
+	public static String inLineData = "";;
+	public static String hostName = "";
 
 	public httpc(String url) throws IOException {
 		hashMapHeaders = new HashMap<>();
 		fileName = "";
 		inputFileName = "";
-
-		// String hostname = "www.httpbin.org";
+		hostName = url;
 		if (!url.contains("www.")) {
 			url = "www." + url.trim();
 		}
@@ -56,6 +57,7 @@ public class httpc {
 		enableHeaders = false;
 		requestType = "";
 		methodName = "";
+		hostName = "";
 		hashMapHeaders.clear();
 		fileName = "";
 		inputFileName = "";
@@ -81,7 +83,7 @@ public class httpc {
 
 		// Send headers
 		out.write("GET " + path + " HTTP/1.0\r\n");
-		out.write("Host: httpbin.org\r\n");
+		out.write("Host: " + hostName.trim() + "\r\n");
 		HashMap<String, String> headers = getHashMapHeaders();
 		for (String key : headers.keySet()) {
 			out.write(key + ": " + headers.get(key) + "\r\n");
@@ -127,7 +129,7 @@ public class httpc {
 
 		// Send headers
 		out.write("POST " + path + " HTTP/1.0\r\n");
-		out.write("Host: httpbin.org\r\n");
+		out.write("Host:" + hostName.trim() + "\r\n");
 
 		if (inLineData.length() > 0) {
 			out.write("Content-Length: " + inLineData.length() + "\r\n");
@@ -172,8 +174,8 @@ public class httpc {
 			if (!enableHeaders)
 				responseData = verboseResponse;
 			if (enableFileWrite) {
-
 				writeToFile(fileName, responseData);
+
 				return "";
 			} else {
 
@@ -215,7 +217,8 @@ public class httpc {
 	public static String helpGET() {
 		return "usage: httpc get [-v] [-h key:value] URL" + "\n" + "Get executes a HTTP GET request for a given URL."
 				+ "\n" + "-v" + "\t\t" + "Prints the detail of the response such as protocol, status, and headers."
-				+ "\n" + "-h key:value" + "\n" + "Associates headers to HTTP Request with the format 'key:value'.";
+				+ "\n" + "-h key:value" + "\n" + "-o write response to a given file name." + "\n"
+				+ "Associates headers to HTTP Request with the format 'key:value'.";
 	}
 
 	public static String helpPOST() {
@@ -225,7 +228,7 @@ public class httpc {
 				+ " -h key:value" + "\t" + "Associates headers to HTTP Request with the format 'key:value'." + "\n"
 				+ "-d string" + "\t" + "Associates an inline data to the body HTTP POST request." + "\n"
 				+ "-f file Associates the content of a file to the body HTTP POST request." + "\n"
-				+ "Either [-d] or [-f] can be used but not both.";
+				+ "-o write response to a given file name." + "\n" + "Either [-d] or [-f] can be used but not both.";
 	}
 
 	public void setRequestType(String requestType) {
@@ -322,7 +325,6 @@ public class httpc {
 				}
 			}
 		}
-
 		if (methodName.charAt(methodName.length() - 1) == '/') {
 			methodName = methodName.substring(0, methodName.length() - 1);
 		}
