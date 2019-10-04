@@ -8,19 +8,14 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.net.URLEncoder;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class httpc {
 	private static String methodName;
 	private static String requestType;
-	private static String params;
+
 	public static boolean enableHeaders = false;
 	public static boolean enableFileWrite = false;
 	public static boolean enableFileRead = false;
@@ -35,7 +30,6 @@ public class httpc {
 
 	public httpc(String url) throws IOException {
 		hashMapHeaders = new HashMap<>();
-		params = "";
 		fileName = "";
 		inputFileName = "";
 
@@ -60,7 +54,6 @@ public class httpc {
 		enableFileRead = false;
 		enableHeaders = false;
 		requestType = "";
-		params = "";
 		methodName = "";
 		hashMapHeaders.clear();
 		fileName = "";
@@ -75,19 +68,6 @@ public class httpc {
 
 	public static void setInputFileName(String file) {
 		inputFileName = file;
-	}
-
-	public String setParams(HashMap<String, String> hashMap) throws UnsupportedEncodingException {
-
-		for (String key : hashMap.keySet()) {
-			params = params
-					.concat(URLEncoder.encode(key, "UTF-8") + "=" + URLEncoder.encode(hashMap.get(key), "UTF-8") + "&");
-		}
-
-		if (params.length() > 0 && params.charAt(params.length() - 1) == '&') {
-			params = params.substring(0, params.length() - 1);
-		}
-		return params;
 	}
 
 	public static String sendGETRequest(String queryParams) throws IOException {
@@ -108,6 +88,7 @@ public class httpc {
 		out.write("\r\n");
 		out.flush();
 		String response = readResponse(in);
+		System.out.println(response);
 		boolean isResponse = false;
 		String verboseResponse = "";
 		if (responseParser(response)) {
@@ -144,16 +125,16 @@ public class httpc {
 		// Send headers
 		out.write("POST " + path + " HTTP/1.0\r\n");
 		out.write("Host: httpbin.org\r\n");
-		if (inLineData.length() > 0)
-			out.write(inLineData + "\r\n");
-		if (params.length() > 0) {
-			out.write("Content-Length: " + params.length() + "\r\n");
+
+		if (inLineData.length() > 0) {
+			out.write("Content-Length: " + inLineData.length() + "\r\n");
 
 		}
 		String fileContent = "";
 		if (enableFileRead) {
 			fileContent = getContents(inputFileName);
 		}
+		System.out.println(fileContent);
 		if (fileContent.length() > 0) {
 			out.write("Content-Length: " + fileContent.length() + "\r\n");
 
@@ -164,16 +145,16 @@ public class httpc {
 		for (String key : headers.keySet()) {
 			out.write(key + ": " + headers.get(key) + "\r\n");
 		}
-		if (params.length() > 0)
-			out.write(params);
-		if (fileContent.length() > 0)
-			out.write(params);
-
 		out.write("\r\n");
-		// Send parameters
+		if (inLineData.length() > 0)
+			out.write(inLineData);
+
+		if (fileContent.length() > 0)
+			out.write(fileContent);
 
 		out.flush();
 		String response = readResponse(in);
+		System.out.println(response);
 		boolean isResponse = false;
 		String verboseResponse = "";
 		if (responseParser(response)) {
@@ -186,7 +167,6 @@ public class httpc {
 					}
 				}
 			}
-
 			if (!enableHeaders)
 				response = verboseResponse;
 			if (enableFileWrite) {
@@ -211,15 +191,14 @@ public class httpc {
 	}
 
 	private static String readResponse(BufferedReader in) throws IOException {
-		System.out.println("\n * Response");
+
 		String response = "";
 		String line;
-
 		while ((line = in.readLine()) != null) {
 			response += line + "\n";
+			line = null;
 		}
-
-		return response;
+		return response.toString();
 
 	}
 
@@ -264,15 +243,15 @@ public class httpc {
 	}
 
 	private static String getContents(String filePath) throws IOException {
-		List<String> contents = new ArrayList<String>();
+		String contents = "";
 		BufferedReader input = new BufferedReader(new FileReader("./" + filePath));
 		String line;
 		while ((line = input.readLine()) != null) {
-			contents.add(line);
+			contents = contents.concat(line + "\n");
 		}
 		input.close();
 
-		return contents.toString();
+		return contents;
 	}
 
 	private static void writeToFile(String fileName, String response) throws IOException {

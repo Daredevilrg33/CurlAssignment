@@ -8,13 +8,8 @@ public class MainDriver {
 
 	public static void main(String[] args) {
 		httpc httpcObj;
-
-		// httpc (get|post) [-v] (-h "k:v")* [-d inline-data] [-f file] URL
 		System.out.println("Welcome to the Curl Terminal");
 		System.out.println("Please enter the Curl Command");
-		// httpc post -h Content-Type:application/json -d '{"Assignment": 1}' -f
-		// 'C:/Us ers/Nancy Goyal/Contacts/Desktop/compnetw/hello.txt'
-		// http://httpbin.org/post
 		while (true) {
 			Scanner scanner = new Scanner(System.in);
 			String inputData = scanner.nextLine();
@@ -42,11 +37,6 @@ public class MainDriver {
 				}
 				inputData = inputData.replaceAll(url, "");
 				String[] inputs = inputData.split(" -");
-				for(int i=0;i<inputs.length;i++)
-				{
-					System.out.println("*********"+inputs[i]);	
-				}
-				
 				String[] httpRequestType = inputs[0].split(" ");
 				String http = httpRequestType[0];
 				String requestType = httpRequestType[1];
@@ -68,7 +58,6 @@ public class MainDriver {
 						}
 						val = val.replaceAll("\"", "");
 						val = val.replaceAll("'", "");
-
 						String[] header = val.split(":");
 						headerHashMap.put(header[0].trim(), header[1].trim());
 					}
@@ -77,7 +66,7 @@ public class MainDriver {
 						for (int j = 1; j < data.length; j++) {
 							vall = vall.concat(data[j] + " ");
 						}
-						inLineData = vall.trim();
+						inLineData = vall.replaceAll("'", "").trim();
 						String dataValue = vall.replaceAll("\\}", "").replaceAll("'", "").replaceAll("\"", "")
 								.replaceAll("\\{", "");
 						String[] allData = dataValue.split(",");
@@ -86,7 +75,6 @@ public class MainDriver {
 							dataHashMap.put(d[0].trim(), d[1].trim());
 						}
 					}
-
 					if (data[0].equalsIgnoreCase("f")) {
 						for (int j = 1; j < data.length; j++) {
 							file = file.concat(data[j]);
@@ -100,14 +88,13 @@ public class MainDriver {
 						for (int j = 1; j < data.length; j++) {
 							OutputFileName = OutputFileName.concat(data[j]);
 						}
-						
 						enableFileWrite = true;
 					}
 					if (data[0].equalsIgnoreCase("f")) {
 						for (int j = 1; j < data.length; j++) {
 							InputFileName = InputFileName.concat(data[j]);
 						}
-						
+
 						enableFileRead = true;
 					}
 				}
