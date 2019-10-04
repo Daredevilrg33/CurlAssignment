@@ -1,0 +1,32 @@
+HTTP/1.0 200 OK
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Origin: *
+Referrer-Policy: no-referrer-when-downgrade
+Content-Type: application/json
+Date: Fri, 04 Oct 2019 05:03:36 GMT
+Server: nginx
+X-Content-Type-Options: nosniff
+X-Frame-Options: DENY
+X-XSS-Protection: 1; mode=block
+Content-Length: 487
+Connection: keep-alive
+
+{
+  "args": {}, 
+  "data": "{\"name\":\"game_name\", \"publisher\":\"PUBLISHER\",\"pubished_in\":\"YEAR\"}", 
+  "files": {}, 
+  "form": {}, 
+  "headers": {
+    "Content-Length": "66", 
+    "Content-Type": "application/json", 
+    "Host": "httpbin.org", 
+    "User-Agent": "Concordia-HTTP/1.0"
+  }, 
+  "json": {
+    "name": "game_name", 
+    "pubished_in": "YEAR", 
+    "publisher": "PUBLISHER"
+  }, 
+  "origin": "132.205.229.110, 132.205.229.110", 
+  "url": "https://httpbin.org/post"
+}

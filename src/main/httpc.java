@@ -36,9 +36,9 @@ public class httpc {
 		fileName = "";
 		inputFileName = "";
 		hostName = url;
-		if (!url.contains("www.")) {
-			url = "www." + url.trim();
-		}
+//		if (!url.contains("www.")) {
+//			url = "www." + url.trim();
+//		}
 		initializeSocket(url);
 	}
 
@@ -60,6 +60,9 @@ public class httpc {
 		hostName = "";
 		hashMapHeaders.clear();
 		fileName = "";
+		queryParameters = "";
+		inLineData = "";
+		responseData = "";
 		inputFileName = "";
 		out.close();
 		in.close();
@@ -92,34 +95,45 @@ public class httpc {
 		out.flush();
 
 		responseData = readResponse(in);
-		// System.out.println("\n\n *** response sendGETRequest::: "+response);
+
+		// System.out.println("\n\n *** response sendGETRequest::: " + responseData);
+
+		if (responseParser()) {
+
+			return responseData;
+
+		} else
+			return "";
+	}
+
+	public static String sendRequest(String queryParams, String requestType) throws IOException {
 		boolean isResponse = false;
 		String verboseResponse = "";
-		if (responseParser()) {
-			if (!enableHeaders) {
-				for (String str : responseData.split("\n")) {
-					if (isResponse)
-						verboseResponse = verboseResponse.concat(str + "\n");
-					if (str.trim().length() <= 0) {
-						isResponse = true;
-					}
-				}
-			}
-
-			if (!enableHeaders)
-				responseData = verboseResponse;
-			if (enableFileWrite) {
-
-				writeToFile(fileName, responseData);
-				return "";
-			} else {
-
-				return responseData;
-			}
-
+		if (requestType.equalsIgnoreCase("get")) {
+			responseData = sendGETRequest(queryParams);
+		} else {
+			responseData = sendPOSTRequest();
 		}
 
+		if (!enableHeaders) {
+			for (String str : responseData.split("\n")) {
+				if (isResponse)
+					verboseResponse = verboseResponse.concat(str + "\n");
+				if (str.trim().length() <= 0) {
+					isResponse = true;
+				}
+			}
+		}
+
+		if (!enableHeaders)
+			responseData = verboseResponse;
+		if (enableFileWrite) {
+
+			writeToFile(fileName, responseData);
+			responseData = "";
+		}
 		return responseData;
+
 	}
 
 	public static String sendPOSTRequest() throws IOException {
@@ -139,7 +153,6 @@ public class httpc {
 		if (enableFileRead) {
 			fileContent = getContents(inputFileName);
 		}
-		System.out.println(fileContent);
 		if (fileContent.length() > 0) {
 			out.write("Content-Length: " + fileContent.length() + "\r\n");
 
@@ -162,28 +175,9 @@ public class httpc {
 		boolean isResponse = false;
 		String verboseResponse = "";
 		if (responseParser()) {
-			if (!enableHeaders) {
-				for (String str : responseData.split("\n")) {
-					if (isResponse)
-						verboseResponse = verboseResponse.concat(str + "\n");
-					if (str.trim().length() <= 0) {
-						isResponse = true;
-					}
-				}
-			}
-			if (!enableHeaders)
-				responseData = verboseResponse;
-			if (enableFileWrite) {
-				writeToFile(fileName, responseData);
-
-				return "";
-			} else {
-
-				return responseData;
-			}
-		}
-
-		return responseData;
+			return responseData;
+		} else
+			return "";
 	}
 
 	public void setMethodName(String methodName) {
@@ -225,7 +219,7 @@ public class httpc {
 		return "usage: httpc post [-v] [-h key:value] [-d inline-data] [-f file] URL" + "\n"
 				+ "Post executes a HTTP POST request for a given URL with inline data or from file." + "\n" + "-v"
 				+ "\t\t" + "Prints the detail of the response such as protocol, status, and headers." + "\n"
-				+ " -h key:value" + "\t" + "Associates headers to HTTP Request with the format 'key:value'." + "\n"
+				+ "-h key:value" + "\t" + "Associates headers to HTTP Request with the format 'key:value'." + "\n"
 				+ "-d string" + "\t" + "Associates an inline data to the body HTTP POST request." + "\n"
 				+ "-f file Associates the content of a file to the body HTTP POST request." + "\n"
 				+ "-o write response to a given file name." + "\n" + "Either [-d] or [-f] can be used but not both.";
@@ -283,6 +277,7 @@ public class httpc {
 					isValidResponse = false;
 				} else {
 					isValidResponse = true;
+					break;
 				}
 			} else if (!isValidResponse) {
 				String[] arr = str.split(":");
