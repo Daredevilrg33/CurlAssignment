@@ -122,6 +122,10 @@ public class MainDriver {
 						if (data[0].equalsIgnoreCase("o")) {
 							for (int j = 1; j < data.length; j++) {
 								OutputFileName = OutputFileName.concat(data[j]);
+								if (OutputFileName.contains("'"))
+									OutputFileName = OutputFileName.replaceAll("'", "");
+								if(OutputFileName.contains("\""))
+									OutputFileName = OutputFileName.replaceAll("\"", "");
 							}
 							enableFileWrite = true;
 						}

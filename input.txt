@@ -1,1 +1,1 @@
-{"Assignment": 1,"name":"game_name", "publisher":"PUBLISHER","pubished_in":"YEAR"}
+{"name":"game_name", "publisher":"PUBLISHER","pubished_in":"YEAR"}
