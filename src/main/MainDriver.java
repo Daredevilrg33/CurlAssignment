@@ -16,7 +16,7 @@ public class MainDriver {
 			boolean dataOrFileFlag = false;
 			boolean validCurl = true;
 			if (sel != 2) {
-				System.out.print(" Enter the CURL Command ");
+				System.out.print("Enter the CURL Command ");
 				userInput = new Scanner(System.in);
 				String inputData = userInput.nextLine();
 				if (inputData.trim().toLowerCase().contains("help")) {
@@ -75,13 +75,19 @@ public class MainDriver {
 										vall = vall.concat(data[j] + " ");
 									}
 									inLineData = vall.replaceAll("'", "").trim();
-									String dataValue = vall.replaceAll("\\}", "").replaceAll("'", "")
-											.replaceAll("\"", "").replaceAll("\\{", "");
-									String[] allData = dataValue.split(",");
-									for (String deta : allData) {
-										String[] d = deta.split(":");
-										dataHashMap.put(d[0].trim(), d[1].trim());
-									}
+//									String dataValue = vall.replaceAll("\\}", "").replaceAll("'", "")
+//											.replaceAll("\"", "").replaceAll("\\{", "");
+//									String[] allData = dataValue.split(",");
+//									for (String deta : allData) {
+//										String[] d = null;
+//										if (deta.contains(":"))
+//											d = deta.split(":");
+//										else if (deta.contains("=")) {
+//											d = deta.split("=");
+//
+//										}
+//										dataHashMap.put(d[0].trim(), d[1].trim());
+//									}
 									dataOrFileFlag = true;
 								} else {
 									validCurl = false;
@@ -130,16 +136,16 @@ public class MainDriver {
 					}
 
 					if (validCurl) {
-						System.out.println("inLineData" + inLineData);
-						System.out.println(enableVerbose);
-						System.out.println(enableFileWrite);
-						System.out.println(enableFileRead);
-						System.out.println(headerHashMap);
-						System.out.println(dataHashMap);
-						System.out.println(http);
-						System.out.println(requestType);
-						System.out.println(file);
-						System.out.println(url);
+//						System.out.println("inLineData" + inLineData);
+//						System.out.println(enableVerbose);
+//						System.out.println(enableFileWrite);
+//						System.out.println(enableFileRead);
+//						System.out.println(headerHashMap);
+//						System.out.println(dataHashMap);
+//						System.out.println(http);
+//						System.out.println(requestType);
+//						System.out.println(file);
+//						System.out.println(url);
 
 						url = url.replaceAll("'", "");
 						String properURL = "";
@@ -151,12 +157,11 @@ public class MainDriver {
 						} else {
 							properURL = url;
 						}
-						if(!(properURL.contains("http://")|properURL.contains("https://")))
-						{
-							properURL = "http://"+properURL.trim();	
+						if (!(properURL.contains("http://") | properURL.contains("https://"))) {
+							properURL = "http://" + properURL.trim();
 						}
-						System.out.println(properURL);
-						System.out.println(queryParams);
+//						System.out.println(properURL);
+//						System.out.println(queryParams);
 						String[] checkVal = properURL.split("[^a-zA-Z0-9.-]");
 						String hostName = "";
 						String methodName = "";
@@ -174,8 +179,8 @@ public class MainDriver {
 						if (methodName.charAt(methodName.length() - 1) == '/') {
 							methodName = methodName.substring(0, methodName.length() - 1);
 						}
-						System.out.println("HostName : " + hostName);
-						System.out.println("Method Name : " + methodName);
+//						System.out.println("HostName : " + hostName);
+//						System.out.println("Method Name : " + methodName);
 						String response = "";
 						try {
 							httpcObj = new httpc(hostName);
@@ -201,7 +206,7 @@ public class MainDriver {
 								httpcObj.setHashMapHeaders(headerHashMap);
 								// httpcObj.setParams(dataHashMap);
 								httpc.inLineData = inLineData;
-								response = httpc.sendRequest("", requestType);
+								response = httpc.sendRequest(queryParams, requestType);
 							} else
 								System.out.println("Invalid request type.");
 							System.out.println(response);
@@ -228,7 +233,7 @@ public class MainDriver {
 		System.out.println("*************************************************");
 		System.out.println("Welcome to the Curl Terminal");
 		System.out.println("*************************************************");
-		System.out.println(" Press 1  to enter curl command");
+		System.out.println("Press 1  to enter curl command");
 		System.out.println("Press 2 to Exit the process.");
 		return userInput.nextInt();
 	}

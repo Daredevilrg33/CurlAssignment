@@ -3,24 +3,19 @@ Access-Control-Allow-Credentials: true
 Access-Control-Allow-Origin: *
 Referrer-Policy: no-referrer-when-downgrade
 Content-Type: application/json
-Date: Fri, 04 Oct 2019 06:45:54 GMT
+Date: Sat, 05 Oct 2019 02:51:22 GMT
 Server: nginx
 X-Content-Type-Options: nosniff
 X-Frame-Options: DENY
 X-XSS-Protection: 1; mode=block
-Content-Length: 317
-Connection: Close
+Content-Length: 148
+Connection: keep-alive
 
 {
-  "args": {
-    "assignment": "1", 
-    "course": "networking"
-  }, 
+  "args": {}, 
   "headers": {
-    "Content-Type": "application/json", 
-    "Host": "httpbin.org", 
-    "User-Agent": "Concordia-HTTP/1.0"
+    "Host": "httpbin.org"
   }, 
-  "origin": "132.205.229.110, 132.205.229.110", 
-  "url": "https://httpbin.org/get?course=networking&assignment=1"
+  "origin": "132.205.229.41, 132.205.229.41", 
+  "url": "https://httpbin.org/get"
 }

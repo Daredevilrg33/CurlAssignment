@@ -44,7 +44,7 @@ public class httpc {
 
 	private static void initializeSocket(String url) throws IOException {
 		// TODO Auto-generated method stub
-		System.out.println(url);
+//		System.out.println(url);
 		InetAddress addr = InetAddress.getByName(url);
 		Socket socket = new Socket(addr, port);
 		out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF8"));
@@ -77,11 +77,11 @@ public class httpc {
 	}
 
 	public static String sendGETRequest(String queryParams) throws IOException {
-		System.out.println("GET * Request");
+//		System.out.println("GET * Request");
 		queryParameters = queryParams;
 		String path = "";
 		path = "/" + getMethodName();
-		if (queryParams.trim().length() > 0)
+		if (queryParameters.trim().length() > 0)
 			path = path.concat("?" + queryParams);
 
 		// Send headers
@@ -95,7 +95,7 @@ public class httpc {
 		out.flush();
 
 		responseData = readResponse(in);
-
+//		System.out.println("Response Data " + responseData);
 		// System.out.println("\n\n *** response sendGETRequest::: " + responseData);
 
 		if (responseParser()) {
@@ -112,7 +112,7 @@ public class httpc {
 		if (requestType.equalsIgnoreCase("get")) {
 			responseData = sendGETRequest(queryParams);
 		} else {
-			responseData = sendPOSTRequest();
+			responseData = sendPOSTRequest(queryParams);
 		}
 
 		if (!enableHeaders) {
@@ -136,10 +136,12 @@ public class httpc {
 
 	}
 
-	public static String sendPOSTRequest() throws IOException {
-		System.out.println(" * Request");
-
+	public static String sendPOSTRequest(String queryParams) throws IOException {
+//		System.out.println(" * Request");
+		queryParameters = queryParams;
 		String path = "/" + getMethodName();
+		if (queryParameters.trim().length() > 0)
+			path = path.concat("?" + queryParams);
 
 		// Send headers
 		out.write("POST " + path + " HTTP/1.0\r\n");
@@ -172,6 +174,7 @@ public class httpc {
 
 		out.flush();
 		responseData = readResponse(in);
+//		System.out.println("Response Data " + responseData);
 		boolean isResponse = false;
 		String verboseResponse = "";
 		if (responseParser()) {
@@ -287,14 +290,15 @@ public class httpc {
 						d = d.concat(arr[j] + ":");
 					try {
 						d = d.substring(0, d.length() - 1);
-						System.out.println(d);
+//						System.out.println(d);
 						d = parseURL(d);
 						initializeSocket(d);
 						if (requestType.equalsIgnoreCase("GET")) {
 							responseData = sendGETRequest(queryParameters);
 							return true;
 						} else {
-							sendPOSTRequest();
+							responseData = sendPOSTRequest(queryParameters);
+							return true;
 						}
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
@@ -323,8 +327,8 @@ public class httpc {
 		if (methodName.charAt(methodName.length() - 1) == '/') {
 			methodName = methodName.substring(0, methodName.length() - 1);
 		}
-		System.out.println("HostName : " + hostName);
-		System.out.println("Method Name : " + methodName);
+//		System.out.println("HostName : " + hostName);
+//		System.out.println("Method Name : " + methodName);
 		httpc.methodName = methodName;
 		return hostName;
 	}

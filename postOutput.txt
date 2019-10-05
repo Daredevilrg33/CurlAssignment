@@ -2,9 +2,9 @@ HTTP/1.0 405 METHOD NOT ALLOWED
 Access-Control-Allow-Credentials: true
 Access-Control-Allow-Origin: *
 Referrer-Policy: no-referrer-when-downgrade
-Allow: OPTIONS, HEAD, GET
+Allow: HEAD, GET, OPTIONS
 Content-Type: text/html
-Date: Fri, 04 Oct 2019 06:01:27 GMT
+Date: Sat, 05 Oct 2019 02:59:38 GMT
 Server: nginx
 X-Content-Type-Options: nosniff
 X-Frame-Options: DENY
