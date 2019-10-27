@@ -24,7 +24,7 @@ public class httpc {
 	private static BufferedReader in;
 	private static String fileName = "";
 	private static String inputFileName = "";
-	private static int port = 80;
+	private static int port = 8080;
 	private static String queryParameters = "";
 
 	public static String responseData = "";
@@ -44,6 +44,7 @@ public class httpc {
 
 	private static void initializeSocket(String url) throws IOException {
 		// TODO Auto-generated method stub
+//		System.out.println(url);
 //		System.out.println(url);
 		InetAddress addr = InetAddress.getByName(url);
 		Socket socket = new Socket(addr, port);
@@ -97,7 +98,7 @@ public class httpc {
 		responseData = readResponse(in);
 //		System.out.println("Response Data " + responseData);
 		// System.out.println("\n\n *** response sendGETRequest::: " + responseData);
-
+//		System.out.println(responseData);
 		if (responseParser()) {
 
 			return responseData;
@@ -292,6 +293,7 @@ public class httpc {
 						d = d.substring(0, d.length() - 1);
 //						System.out.println(d);
 						d = parseURL(d);
+//						System.out.println(d);
 						initializeSocket(d);
 						if (requestType.equalsIgnoreCase("GET")) {
 							responseData = sendGETRequest(queryParameters);
@@ -330,6 +332,10 @@ public class httpc {
 //		System.out.println("HostName : " + hostName);
 //		System.out.println("Method Name : " + methodName);
 		httpc.methodName = methodName;
+		if (hostName.trim().isEmpty()) {
+			hostName = httpc.hostName;
+		}
+
 		return hostName;
 	}
 }

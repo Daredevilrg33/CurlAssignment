@@ -35,11 +35,11 @@ public class MainDriver {
 					for (String str : test) {
 						str = str.replaceAll("'", "").trim();
 						str = str.replaceAll("\"", "").trim();
-						if (str.matches(
-								"^(http:\\/\\/www\\.|https:\\/\\/www\\.|http:\\/\\/|https:\\/\\/|www\\.)+[a-z0-9]+([\\-\\.]{1}[a-z0-9]+)*\\.[a-z]{2,5}(:[0-9]{1,5})?(\\/.*)?$")) {
-							url = str;
+//						if (str.matches(
+//								"^(http:\\/\\/www\\.|https:\\/\\/www\\.|http:\\/\\/|https:\\/\\/|www\\.)+[a-z0-9]+([\\-\\.]{1}[a-z0-9]+)*\\.[a-z]{2,5}(:[0-9]{1,5})?(\\/.*)?$")) {
+						url = str;
 
-						}
+//						}
 					}
 					inputData = inputData.replaceAll(url, "");
 					String[] inputs = inputData.split(" -");
@@ -124,7 +124,7 @@ public class MainDriver {
 								OutputFileName = OutputFileName.concat(data[j]);
 								if (OutputFileName.contains("'"))
 									OutputFileName = OutputFileName.replaceAll("'", "");
-								if(OutputFileName.contains("\""))
+								if (OutputFileName.contains("\""))
 									OutputFileName = OutputFileName.replaceAll("\"", "");
 							}
 							enableFileWrite = true;
@@ -164,25 +164,25 @@ public class MainDriver {
 						if (!(properURL.contains("http://") | properURL.contains("https://"))) {
 							properURL = "http://" + properURL.trim();
 						}
-//						System.out.println(properURL);
+						System.out.println(properURL);
 //						System.out.println(queryParams);
-						String[] checkVal = properURL.split("[^a-zA-Z0-9.-]");
-						String hostName = "";
+//						String[] checkVal = properURL.split("[^a-zA-Z0-9.-]");
+						String[] checkVal = properURL.split("/");
+						String hostName = checkVal[2];
 						String methodName = "";
-						for (int i = 1; i < checkVal.length; i++) {
+						for (int i = 3; i < checkVal.length; i++) {
 							String s = checkVal[i];
 							if (!s.isEmpty()) {
-								if (s.contains(".")) {
-									hostName = s;
-								} else {
-									methodName = methodName.concat(s + "/");
-								}
+								methodName = methodName.concat(s + "/");
+
+							}
+						}
+						if (methodName.length() > 0) {
+							if (methodName.charAt(methodName.length() - 1) == '/') {
+								methodName = methodName.substring(0, methodName.length() - 1);
 							}
 						}
 
-						if (methodName.charAt(methodName.length() - 1) == '/') {
-							methodName = methodName.substring(0, methodName.length() - 1);
-						}
 //						System.out.println("HostName : " + hostName);
 //						System.out.println("Method Name : " + methodName);
 						String response = "";
@@ -218,6 +218,7 @@ public class MainDriver {
 						} catch (IOException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
+							System.out.println("Connection Refused !!!");
 						}
 					} else {
 						System.out.println("Incorrect Curl Command");
