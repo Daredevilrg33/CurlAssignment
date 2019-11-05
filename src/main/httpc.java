@@ -36,16 +36,16 @@ public class httpc {
 		fileName = "";
 		inputFileName = "";
 		hostName = url;
-//		if (!url.contains("www.")) {
-//			url = "www." + url.trim();
-//		}
+		// if (!url.contains("www.")) {
+		// url = "www." + url.trim();
+		// }
 		initializeSocket(url);
 	}
 
 	private static void initializeSocket(String url) throws IOException {
 		// TODO Auto-generated method stub
-//		System.out.println(url);
-//		System.out.println(url);
+		// System.out.println(url);
+		// System.out.println(url);
 		InetAddress addr = InetAddress.getByName(url);
 		Socket socket = new Socket(addr, port);
 		out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF8"));
@@ -78,7 +78,7 @@ public class httpc {
 	}
 
 	public static String sendGETRequest(String queryParams) throws IOException {
-//		System.out.println("GET * Request");
+		// System.out.println("GET * Request");
 		queryParameters = queryParams;
 		String path = "";
 		path = "/" + getMethodName();
@@ -96,9 +96,9 @@ public class httpc {
 		out.flush();
 
 		responseData = readResponse(in);
-//		System.out.println("Response Data " + responseData);
+		// System.out.println("Response Data " + responseData);
 		// System.out.println("\n\n *** response sendGETRequest::: " + responseData);
-//		System.out.println(responseData);
+		// System.out.println(responseData);
 		if (responseParser()) {
 
 			return responseData;
@@ -138,7 +138,7 @@ public class httpc {
 	}
 
 	public static String sendPOSTRequest(String queryParams) throws IOException {
-//		System.out.println(" * Request");
+		// System.out.println(" * Request");
 		queryParameters = queryParams;
 		String path = "/" + getMethodName();
 		if (queryParameters.trim().length() > 0)
@@ -175,7 +175,7 @@ public class httpc {
 
 		out.flush();
 		responseData = readResponse(in);
-//		System.out.println("Response Data " + responseData);
+		// System.out.println("Response Data " + responseData);
 		boolean isResponse = false;
 		String verboseResponse = "";
 		if (responseParser()) {
@@ -273,27 +273,30 @@ public class httpc {
 	private static boolean responseParser() {
 		boolean isValidResponse = false;
 		String[] splitResponse = responseData.split("\n");
+		boolean fileDownload = false;
+		String contentType = "";
+		String ext = "";
 		for (int i = 0; i < splitResponse.length; i++) {
 			String str = splitResponse[i];
+			String[] arr = str.split(":");
 			if (i == 0) {
 				String[] data = str.split(" ");
 				if (Integer.parseInt(data[1]) >= 300 && Integer.parseInt(data[1]) < 306) {
 					isValidResponse = false;
 				} else {
 					isValidResponse = true;
-					break;
+					// break;
 				}
 			} else if (!isValidResponse) {
-				String[] arr = str.split(":");
 				if (arr[0].equalsIgnoreCase("location")) {
 					String d = "";
 					for (int j = 1; j < arr.length; j++)
 						d = d.concat(arr[j] + ":");
 					try {
 						d = d.substring(0, d.length() - 1);
-//						System.out.println(d);
+						// System.out.println(d);
 						d = parseURL(d);
-//						System.out.println(d);
+						// System.out.println(d);
 						initializeSocket(d);
 						if (requestType.equalsIgnoreCase("GET")) {
 							responseData = sendGETRequest(queryParameters);
@@ -307,9 +310,77 @@ public class httpc {
 						e.printStackTrace();
 					}
 				}
+
+			} else {
+				if (arr[0].trim().equalsIgnoreCase("Content-Disposition")) {
+					if (arr[1].trim().equalsIgnoreCase("attachment")) {
+						fileDownload = true;
+					}
+				}
+				System.out.println("arr[0] " + arr[0]);
+
+				if (arr[0].trim().equalsIgnoreCase("Content-Type")) {
+					contentType = arr[1].trim();
+					System.out.println("contentType " + contentType);
+					if (contentType.equalsIgnoreCase("application/json"))
+						ext = "json";
+					if (contentType.equalsIgnoreCase("application/xml") || contentType.equalsIgnoreCase("text/xml"))
+						ext = "xml";
+					if (contentType.equalsIgnoreCase("application/pdf"))
+						ext = "pdf";
+					if (contentType.equalsIgnoreCase("text/html"))
+						ext = "html";
+					if (contentType.equalsIgnoreCase("text/plain"))
+						ext = "txt";
+					if (contentType.equalsIgnoreCase("text/css"))
+						ext = "css";
+					if (contentType.equalsIgnoreCase("text/csv"))
+						ext = "csv";
+				}
+
+			}
+
+		}
+		if (isValidResponse && fileDownload)
+			savingAttachment(responseData, ext);
+
+		return isValidResponse;
+	}
+
+	public static void savingAttachment(String responseData, String ext) {
+		System.out.println("in client extension" + ext);
+		boolean isResponse = false;
+		String verboseResponse = "";
+		for (String str : responseData.split("\n")) {
+			if (isResponse)
+				verboseResponse = verboseResponse.concat(str + "\n");
+			if (str.trim().length() <= 0) {
+				isResponse = true;
 			}
 		}
-		return isValidResponse;
+
+		BufferedWriter writer = null;
+		String fileN = "";
+		if (methodName.indexOf("/") == -1)
+			fileN = methodName;
+		else
+			fileN = methodName.substring(methodName.lastIndexOf('/') + 1, methodName.length());
+		if (!fileN.contains("."))
+			fileN = fileN + "." + ext;
+		System.out.println("in client fileN" + fileN);
+		try {
+			writer = new BufferedWriter(new FileWriter(new File(fileN)));
+			writer.write(verboseResponse);
+		} catch (IOException ex) {
+			System.err.println("An IOException was caught!");
+			ex.printStackTrace();
+		} finally {
+			try {
+				writer.close();
+			} catch (Exception ex) {
+				ex.getMessage();
+			}
+		}
 	}
 
 	public static String parseURL(String url) {
@@ -329,8 +400,8 @@ public class httpc {
 		if (methodName.charAt(methodName.length() - 1) == '/') {
 			methodName = methodName.substring(0, methodName.length() - 1);
 		}
-//		System.out.println("HostName : " + hostName);
-//		System.out.println("Method Name : " + methodName);
+		// System.out.println("HostName : " + hostName);
+		// System.out.println("Method Name : " + methodName);
 		httpc.methodName = methodName;
 		if (hostName.trim().isEmpty()) {
 			hostName = httpc.hostName;
