@@ -1,1 +1,0 @@
-[ { "Name": "Pazim", "version": "9" , "INSTALL" : "apt" , "OWNER": "SPI" , "KERNEL":"49"}]

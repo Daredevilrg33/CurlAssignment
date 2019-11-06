@@ -272,6 +272,8 @@ public class httpc {
 
 	private static boolean responseParser() {
 		boolean isValidResponse = false;
+
+		System.out.println("Response Data : " + responseData);
 		String[] splitResponse = responseData.split("\n");
 		boolean fileDownload = false;
 		String contentType = "";
@@ -317,7 +319,6 @@ public class httpc {
 						fileDownload = true;
 					}
 				}
-				System.out.println("arr[0] " + arr[0]);
 
 				if (arr[0].trim().equalsIgnoreCase("Content-Type")) {
 					contentType = arr[1].trim();
