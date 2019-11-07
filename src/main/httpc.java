@@ -273,7 +273,7 @@ public class httpc {
 	private static boolean responseParser() {
 		boolean isValidResponse = false;
 
-		System.out.println("Response Data : " + responseData);
+//		System.out.println("Response Data : " + responseData);
 		String[] splitResponse = responseData.split("\n");
 		boolean fileDownload = false;
 		String contentType = "";
