@@ -349,7 +349,6 @@ public class httpc {
 	}
 
 	public static void savingAttachment(String responseData, String ext) {
-		System.out.println("in client extension" + ext);
 		boolean isResponse = false;
 		String verboseResponse = "";
 		for (String str : responseData.split("\n")) {
@@ -368,7 +367,6 @@ public class httpc {
 			fileN = methodName.substring(methodName.lastIndexOf('/') + 1, methodName.length());
 		if (!fileN.contains("."))
 			fileN = fileN + "." + ext;
-		System.out.println("in client fileN" + fileN);
 		try {
 			writer = new BufferedWriter(new FileWriter(new File(fileN)));
 			writer.write(verboseResponse);
